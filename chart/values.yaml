@@ -1,0 +1,41 @@
+argoNamespace: argo-cd
+# Simply include a section for every app you have in the group, examples below
+firstApp:
+  enabled: true
+  targetRevision: "~1.0.0"
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+  values:
+    mykey: "myval"
+secondApp:
+  enabled: true
+  targetRevision: "~7.1.3"
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+  values:
+    mykey: "myval"
+

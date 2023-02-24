@@ -1,0 +1,31 @@
+{{ raw }}
+{{- if .Values.secondApp.enabled }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Release.Name }}-second-app
+  namespace: {{ .Values.argoNamespace }}
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+{% endraw %}
+    repoURL: https://raw.githubusercontent.com/{{organization}}/charts/main
+{{ raw }}
+    chart: second-app
+    targetRevision: {{ .Values.secondApp.targetRevision | quote }}
+    helm:
+      releaseName: second-app
+      version: v3
+      {{- with .Values.secondApp.values }}
+      values: |
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: second-app
+  syncPolicy:
+  {{- toYaml .Values.secondApp.syncPolicy | nindent 4 }}
+{{- end }}
+{% endraw %}

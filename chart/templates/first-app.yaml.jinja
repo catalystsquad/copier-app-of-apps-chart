@@ -1,0 +1,31 @@
+{{ raw }}
+{{- if .Values.firstApp.enabled }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Release.Name }}-first-app
+  namespace: {{ .Values.argoNamespace }}
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+{% endraw %}
+    repoURL: https://raw.githubusercontent.com/{{organization}}/charts/main
+{{ raw }}
+    chart: first-app
+    targetRevision: {{ .Values.firstApp.targetRevision | quote }}
+    helm:
+      releaseName: first-app
+      version: v3
+      {{- with .Values.firstApp.values }}
+      values: |
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: first-app
+  syncPolicy:
+  {{- toYaml .Values.firstApp.syncPolicy | nindent 4 }}
+{{- end }}
+{% endraw %}
